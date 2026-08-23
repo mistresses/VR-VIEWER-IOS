@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>La app necesita acceso a la red local para recibir el vídeo del PC VR.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>La app usa la cámara para el seguimiento 6DOF con ARKit.</string>
+	<key>Requires full screen</key>
+	<true/>
+</dict>
+</plist>
