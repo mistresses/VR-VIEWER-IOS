@@ -1,0 +1,64 @@
+name: Build VR Viewer iOS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Locate Xcode project
+        run: |
+          find . -name "*.xcodeproj" -print
+          find . -name "*.xcworkspace" -print
+
+      - name: Build iOS app
+        run: |
+          xcodebuild \
+            -project "VR Viewer.xcodeproj" \
+            -scheme "VR Viewer" \
+            -sdk iphoneos \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            build
+
+      - name: Package IPA
+        run: |
+          mkdir -p Payload
+          cp -R "build/Build/Products/Release-iphoneos/VR Viewer.app" Payload/
+          zip -r "VR-Viewer.ipa" Payload
+
+      - name: Calculate SHA-256
+        run: |
+          shasum -a 256 VR-Viewer.ipa > VR-Viewer.ipa.sha256
+          cat VR-Viewer.ipa.sha256
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: VR-Viewer-IPA
+          path: |
+            VR-Viewer.ipa
+            VR-Viewer.ipa.sha256
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: VR Viewer v${{ github.run_number }}
+          generate_release_notes: true
+          files: |
+            VR-Viewer.ipa
+            VR-Viewer.ipa.sha256
